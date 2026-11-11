@@ -1,0 +1,64 @@
+{
+  "facets": [
+    {
+      "key": "genre",
+      "label": "Genre",
+      "description": "Broad category of the work.",
+      "cardinality": "many",
+      "sort_order": 10
+    },
+    {
+      "key": "mood",
+      "label": "Mood",
+      "description": "Emotional color of the work.",
+      "cardinality": "many",
+      "sort_order": 20
+    },
+    {
+      "key": "ending",
+      "label": "Ending",
+      "description": "How the work concludes.",
+      "cardinality": "many",
+      "sort_order": 30
+    },
+    {
+      "key": "tone",
+      "label": "Tone",
+      "description": "Stylistic attitude of the work.",
+      "cardinality": "many",
+      "sort_order": 40
+    },
+    {
+      "key": "intensity",
+      "label": "Intensity",
+      "description": "Relative force of the work.",
+      "cardinality": "one",
+      "sort_order": 50
+    }
+  ],
+  "tags": [
+    { "facet": "genre", "key": "ambient", "label": "Ambient" },
+    { "facet": "genre", "key": "classical", "label": "Classical" },
+    { "facet": "genre", "key": "electronic", "label": "Electronic" },
+    { "facet": "genre", "key": "folk", "label": "Folk" },
+    { "facet": "genre", "key": "jazz", "label": "Jazz" },
+    { "facet": "genre", "key": "narrative", "label": "Narrative" },
+    { "facet": "mood", "key": "calm", "label": "Calm" },
+    { "facet": "mood", "key": "tense", "label": "Tense" },
+    { "facet": "mood", "key": "joyful", "label": "Joyful" },
+    { "facet": "mood", "key": "melancholic", "label": "Melancholic" },
+    { "facet": "mood", "key": "energetic", "label": "Energetic" },
+    { "facet": "ending", "key": "resolved", "label": "Resolved" },
+    { "facet": "ending", "key": "ambiguous", "label": "Ambiguous" },
+    { "facet": "ending", "key": "open", "label": "Open" },
+    { "facet": "ending", "key": "abrupt", "label": "Abrupt" },
+    { "facet": "tone", "key": "warm", "label": "Warm" },
+    { "facet": "tone", "key": "cool", "label": "Cool" },
+    { "facet": "tone", "key": "playful", "label": "Playful" },
+    { "facet": "tone", "key": "serious", "label": "Serious" },
+    { "facet": "tone", "key": "spare", "label": "Spare" },
+    { "facet": "intensity", "key": "low", "label": "Low" },
+    { "facet": "intensity", "key": "medium", "label": "Medium" },
+    { "facet": "intensity", "key": "high", "label": "High" }
+  ]
+}
