@@ -1,4 +1,5 @@
-import { pathToFileURL } from "node:url";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import pg from "pg";
 import { readDatabaseUrl } from "./database-url.js";
 import { loadTaxonomy } from "./index.js";
@@ -62,7 +63,9 @@ async function main(): Promise<void> {
   console.log(`seeded facets=${result.facets} tags=${result.tags}`);
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+const entry = process.argv[1] ? resolve(process.argv[1]) : "";
+const self = fileURLToPath(import.meta.url);
+if (self === entry && self.endsWith("seed.ts")) {
   main().catch((error: unknown) => {
     console.error(error instanceof Error ? error.message : error);
     process.exit(1);

@@ -5,9 +5,12 @@
   "description": "XTome monorepo. Personal media library with structured and semantic search.",
   "packageManager": "pnpm@10.33.4",
   "scripts": {
+    "dev": "pnpm --parallel --filter xt-xtome-api --filter xt-xtome-web dev",
     "migrate": "pnpm --filter xt-xtome-schema migrate",
     "seed": "pnpm --filter xt-xtome-schema seed",
-    "typecheck": "pnpm --filter xt-xtome-schema typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm --filter xt-xtome-api test",
+    "build": "pnpm --filter xt-xtome-web build && pnpm --filter xt-xtome-api build"
   },
   "engines": {
     "node": ">=22"
