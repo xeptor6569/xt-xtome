@@ -18,21 +18,20 @@ Shared nouns:
 | note | Freeform text on an item |
 | signal | A person-supplied mark on an item. v1 stores `rating` (1–5) and `favorite` on `items` |
 
-Reserved package names for later apps: `xt-xtome-web`, `xt-xtome-api`. This repository currently ships `xt-xtome-schema` only.
+Packages: `xt-xtome-schema` (shared types and migrations), `xt-xtome-api`, and `xt-xtome-web`.
 
 ## Repository layout
 
 ```
 package.json
 pnpm-workspace.yaml
-docker-compose.yml
-.env.example
+docker-compose.yml          local Postgres and MinIO
+deploy/compose.yml          production Compose project
+Dockerfile
+.github/workflows/ci.yml
 packages/xt-xtome-schema/
-  taxonomy.json          starter facets and tags
-  migrations/001_init.sql
-  src/index.ts           row types, EMBEDDING_DIMENSIONS, taxonomy loader
-  src/migrate.ts
-  src/seed.ts
+packages/xt-xtome-api/
+packages/xt-xtome-web/
 ```
 
 `xt-xtome-schema` is the shared contract. A later CLI or bot can import the types and read `taxonomy.json` from this package.
@@ -62,7 +61,43 @@ cp .env.example .env
 docker compose up -d
 ```
 
-The image is `pgvector/pgvector:pg16`, database `xtome`, user `xtome`, password `xtome`.
+The database image is `pgvector/pgvector:pg16`, database `xtome`, user `xtome`, password `xtome`. MinIO listens on port 9000 with access key `xtome` and secret `xtome-secret`. Copy `.env.example` to `.env` before starting the app.
+
+## App
+
+`pnpm dev` runs the API on port 3000 and the web app on port 5173. The dev server proxies `/api` to the API.
+
+The API serves the built web app when `WEB_DIST` points at `packages/xt-xtome-web/dist`. On startup it waits for Postgres, creates the object-storage bucket, applies migrations, and seeds the starter vocabulary.
+
+Screens:
+
+- Library — list, sort, and upload
+- Item — description, transcript, duration, rating, favorite, tags, notes, playback, and a control to queue tag suggestions
+- Search — facet and tag filters, a free-text query, and a mode of both, structured, or semantic
+- Tags — create, rename, merge, and delete facets and tags
+- Proposals — accept or reject queued suggestions
+
+Semantic search and auto-tag call an OpenAI-compatible API when `EMBEDDING_BASE_URL` and `EMBEDDING_API_KEY` are set. The embedding model must return 1536 dimensions. With those variables empty, the library, tags, notes, ratings, and structured search keep working, and the semantic actions report that the model is not configured.
+
+Accepting a proposal is the step that writes `item_tags` with origin `confirmed`.
+
+## Production deploy
+
+The self-hosted GitHub Actions workflow in `.github/workflows/ci.yml` typechecks and tests every push and pull request. A push to `main` also builds `xtome:<git sha>` and deploys it with Docker Compose.
+
+One-time host setup:
+
+1. Install Docker and the Docker Compose plugin.
+2. Register a GitHub Actions runner with the `self-hosted` and `linux` labels, and give that user access to the Docker socket.
+3. Copy `deploy/stack.env.example` to `/etc/xtome/stack.env` and set a database password plus an object-storage secret of at least 8 characters. Embedding keys are optional.
+
+The deploy command is:
+
+```bash
+docker compose --env-file /etc/xtome/stack.env -f deploy/compose.yml up -d --remove-orphans --pull never
+```
+
+The project publishes port 8080. Postgres and MinIO stay on the Compose network. `--pull never` uses the image built on that machine.
 
 ## Migrations and seed
 

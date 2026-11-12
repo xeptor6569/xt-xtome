@@ -1,10 +1,25 @@
-import { readdirSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import pg from "pg";
 import { readDatabaseUrl } from "./database-url.js";
 
 const { Client } = pg;
+
+export function resolveMigrationsDir(): string {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const candidates = [
+    process.env.MIGRATIONS_DIR,
+    join(here, "../migrations"),
+    join(here, "../../xt-xtome-schema/migrations"),
+  ].filter((value): value is string => Boolean(value));
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  throw new Error("Could not find the migrations directory. Set MIGRATIONS_DIR.");
+}
 
 export async function migrate(databaseUrl: string): Promise<string[]> {
   const client = new Client({ connectionString: databaseUrl });
@@ -19,7 +34,7 @@ export async function migrate(databaseUrl: string): Promise<string[]> {
       )
     `);
 
-    const migrationsDir = join(dirname(fileURLToPath(import.meta.url)), "../migrations");
+    const migrationsDir = resolveMigrationsDir();
     const files = readdirSync(migrationsDir)
       .filter((name) => name.endsWith(".sql"))
       .sort();
@@ -62,7 +77,9 @@ async function main(): Promise<void> {
   }
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+const entry = process.argv[1] ? resolve(process.argv[1]) : "";
+const self = fileURLToPath(import.meta.url);
+if (self === entry && self.endsWith("migrate.ts")) {
   main().catch((error: unknown) => {
     console.error(error instanceof Error ? error.message : error);
     process.exit(1);
