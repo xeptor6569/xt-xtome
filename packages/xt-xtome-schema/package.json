@@ -1,0 +1,25 @@
+{
+  "name": "xt-xtome-schema",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared XTome types, starter tag taxonomy, and Postgres migrations.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./taxonomy.json": "./taxonomy.json"
+  },
+  "scripts": {
+    "migrate": "tsx src/migrate.ts",
+    "seed": "tsx src/seed.ts",
+    "typecheck": "node scripts/emit-starter-facet-key.js && tsc --noEmit"
+  },
+  "dependencies": {
+    "pg": "^8.16.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "@types/pg": "^8.15.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.0"
+  }
+}

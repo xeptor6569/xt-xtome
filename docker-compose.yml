@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: xtome
+      POSTGRES_PASSWORD: xtome
+      POSTGRES_DB: xtome
+    ports:
+      - "5432:5432"
+    volumes:
+      - xtome_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U xtome -d xtome"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  xtome_pg:
